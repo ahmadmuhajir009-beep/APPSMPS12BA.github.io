@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMP12 Best Agro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background-color: #f4f7f6; color: #333; display: flex; justify-content: center; }
+    .app-container { width: 100%; max-width: 414px; background: #fff; min-height: 100vh; position: relative; padding-bottom: 80px; overflow-x: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+    
+    /* --- PERBAIKAN CSS HALAMAN AGAR TIDAK NGEBUG --- */
+    .page { display: none !important; animation: fadeIn 0.3s ease-in-out; }
+    .page.active { display: block !important; }
+    #login-page.active { display: flex !important; } 
+    /* ----------------------------------------------- */
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .header { background: linear-gradient(135deg, #0099ff, #005ce6); padding: 25px 20px 60px 20px; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; }
+    .header-logo { font-size: 1.2rem; font-weight: 700; }
+    .header-icons i { font-size: 1.2rem; margin-left: 15px; cursor: pointer; }
+    
+    .greeting { padding: 0 20px; margin-top: -30px; }
+    .greeting h2 { font-size: 1.3rem; color: #333; margin-top: 40px;}
+    .greeting p { font-size: 0.85rem; color: #666; }
+    .status-badge { color: #28a745; font-size: 1rem; margin-left: 5px; }
+    
+    .hero-card { background: white; margin: 15px 20px; border-radius: 20px; padding: 20px; display: flex; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; }
+    .hero-img { width: 70px; height: 70px; background: #e0f2fe; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; color: #0099ff; font-size: 2rem; flex-shrink: 0; }
+    .hero-content { flex: 1; }
+    .hero-content h3 { color: #007acc; font-size: 1.1rem; margin-bottom: 5px; }
+    .hero-content p { font-size: 0.8rem; color: #666; margin-bottom: 12px; }
+    .hero-btn { background: #0099ff; color: white; border: none; padding: 10px 15px; border-radius: 25px; font-weight: 600; font-size: 0.85rem; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(0,153,255,0.3); transition: 0.2s; }
+    
+    .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; padding: 20px; }
+    .menu-item { display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: #444; cursor: pointer; }
+    .menu-icon { width: 55px; height: 55px; border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; margin-bottom: 8px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .menu-item span { font-size: 0.75rem; font-weight: 500; line-height: 1.2; }
+    .bg-1 { background: #e8f5e9; color: #2e7d32; } .bg-2 { background: #e3f2fd; color: #1565c0; } .bg-3 { background: #fff3e0; color: #e65100; } .bg-4 { background: #fce4ec; color: #c2185b; } .bg-5 { background: #ede7f6; color: #4527a0; }
+    
+    .bottom-nav { display: none; position: fixed; bottom: 0; width: 100%; max-width: 414px; background: white; justify-content: space-around; padding: 10px 0 15px 0; border-top: 1px solid #f0f0f0; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 100; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 0.75rem; gap: 5px; cursor: pointer; width: 20%; font-weight: 500; transition: 0.3s; }
+    .nav-item.active { color: #0099ff; }
+    .nav-item i { font-size: 1.3rem; margin-bottom: 2px; }
+    .nav-item.center-btn { position: relative; top: -25px; color: #aaa; }
+    .nav-item.center-btn i { background: linear-gradient(135deg, #0099ff, #005ce6); color: white; padding: 18px; border-radius: 50%; font-size: 1.6rem; box-shadow: 0 5px 15px rgba(0, 153, 255, 0.4); border: 5px solid white; transition: 0.3s; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: white; width: 100%; max-width: 350px; padding: 25px; border-radius: 25px; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 8px; color: #555; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 12px; outline: none; font-size: 0.9rem; background: #fcfcfc; transition: 0.3s; }
+    .form-group input:focus, .form-group select:focus { border-color: #0099ff; background: white; }
+    .submit-btn { background: #0099ff; color: white; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,153,255,0.3); }
+    
+    .list-container { padding: 20px; margin-top: -30px; }
+    .page-box { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+    .search-input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 10px; outline: none; font-size:0.9rem; }
+    .data-list { padding: 0 20px 20px 20px; }
+    .empty-msg { text-align:center; color:#999; font-size:0.85rem; margin-top: 30px; }
+    .card-item { background:white; padding:15px; border-radius:15px; margin-bottom:12px; border: 1px solid #eee; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.02); }
+
+    /* --- LOGIN STYLES --- */
+    #login-page { background: linear-gradient(135deg, #0099ff, #005ce6); align-items: center; justify-content: center; padding: 20px; min-height: 100vh; }
+    .login-card { background: white; width: 100%; padding: 30px 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; }
+    
+    /* ID Card Styles */
+    .id-card { background: linear-gradient(135deg, #005ce6, #0099ff); border-radius: 20px; padding: 25px; color: white; text-align: center; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,153,255,0.3); margin-top: 10px; }
+    .card-header { font-weight: 700; border-bottom: 1px dashed rgba(255,255,255,0.4); padding-bottom: 15px; margin-bottom: 20px; font-size: 1rem; letter-spacing: 1px; }
+    .qr-container { background: white; padding: 15px; display: inline-block; border-radius: 15px; margin: 15px 0; }
+    .qr-container img { width: 130px; height: 130px; display: block; }
+    .student-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
+    .student-info { font-size: 0.85rem; opacity: 0.9; font-weight: 300; }
+
+    /* --- TAMBAHAN TOAST NOTIFICATION CSS --- */
+    #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px; pointer-events: none; }
+    .toast { background: #333; color: white; padding: 12px 20px; border-radius: 30px; font-size: 0.9rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; animation: slideDown 0.4s forwards; }
+    .toast.success { background: #28a745; }
+    .toast.error { background: #dc3545; }
+    .toast.fade-out { animation: fadeOutToast 0.3s forwards; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOutToast { to { opacity: 0; transform: translateY(-15px); } }
+  </style>
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div class="app-container">
+
+  <div id="login-page" class="page active">
+    <div class="login-card">
+      <img src="https://i.postimg.cc/HLD04NFg/LOGO-SMPS12BA-removebg-preview.png" alt="Logo SMPS12BA" style="width: 80px; height: 80px; margin-bottom: 10px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <h2 style="color:#333; margin-bottom:5px;">Sistem Login</h2>
+      <p style="font-size:0.85rem; color:#666; margin-bottom:25px;">SMP12 Best Agro</p>
+      
+      <div class="form-group" style="text-align:left;">
+        <label>Username / NIS</label>
+        <input type="text" id="login-user" placeholder="Masukkan Username/NIS">
+      </div>
+      <div class="form-group" style="text-align:left;">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Masukkan Password">
+      </div>
+      <button class="submit-btn" id="btn-login" onclick="prosesLogin()">Masuk ke Aplikasi</button>
+    </div>
+  </div>
+
+  <div id="admin-page" class="page">
+    <div class="header">
+      <div class="header-logo" style="display: flex; align-items: center; gap: 10px;">
+  <img src="https://i.postimg.cc/HLD04NFg/LOGO-SMPS12BA-removebg-preview.png" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: white; padding: 2px;">
+  <span>SMPS12 Best Agro</span>
+</div>
+      <div class="header-icons">
+        <i class="fas fa-bell" onclick="openModal('notifModal')"></i>
+        <i class="fas fa-sign-out-alt" style="color:#ffcccc;" onclick="logout()"></i>
+      </div>
+    </div>
+    <div class="greeting">
+      <h2>Hi, <span id="nama-admin">Admin</span> <i class="fas fa-user-shield status-badge"></i></h2>
+      <p>Dashboard Pengelola Sistem</p>
+    </div>
+    
+    <div class="list-container" style="margin-top:-10px;">
+      <div class="page-box" style="text-align:center; padding:30px 20px;">
+        <h3 style="color:#333; margin-bottom:10px;">Kelola Database Sekolah</h3>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:20px;">Untuk melakukan input nilai, absen siswa, mengubah jadwal, dan manajemen pengumuman, silakan buka Database Master di Google Sheets.</p>
+        
+        <button class="submit-btn" style="background:#28a745; display:inline-block; text-decoration:none;" onclick="window.open('https://docs.google.com/spreadsheets/', '_blank')">
+          <i class="fas fa-table"></i> Buka Google Sheets
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="home-page" class="page">
+    <div class="header">
+      <div class="header-logo" style="display: flex; align-items: center; gap: 10px;">
+  <img src="https://i.postimg.cc/HLD04NFg/LOGO-SMPS12BA-removebg-preview.png" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: white; padding: 2px;">
+  <span>SMP12 Best Agro</span>
+</div>
+      <div class="header-icons">
+        <i class="fas fa-bell" onclick="openModal('notifModal')"></i>
+        <i class="fas fa-sign-out-alt" style="color:#ffcccc;" onclick="logout()"></i>
+      </div>
+    </div>
+    <div class="greeting">
+      <h2>Hi, <span id="nama-siswa">SISWA</span> <i class="fas fa-check-circle status-badge"></i></h2>
+      <p>Tahun Ajaran 2026/2027 (Aktif)</p>
+    </div>
+    <div class="hero-card">
+      <div class="hero-img"><i class="fas fa-school"></i></div>
+      <div class="hero-content">
+        <h3>Absensi Harian</h3>
+        <p>Catat kehadiran Anda hari ini.</p>
+        <button class="hero-btn" onclick="openModal('absenModal')">Isi Absen Sekarang</button>
+      </div>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-item" onclick="bukaInfo()"><div class="menu-icon bg-1"><i class="fas fa-bullhorn"></i></div><span>Info<br>Sekolah</span></div>
+      <div class="menu-item" onclick="bukaJadwal()"><div class="menu-icon bg-2"><i class="fas fa-calendar-alt"></i></div><span>Jadwal<br>Pelajaran</span></div>
+      <div class="menu-item" onclick="bukaKontak()"><div class="menu-icon bg-3"><i class="fas fa-address-book"></i></div><span>Kontak<br>Sekolah</span></div>
+      <div class="menu-item" onclick="bukaRaport()"><div class="menu-icon bg-4"><i class="fas fa-file-alt"></i></div><span>E-Raport<br>Siswa</span></div>
+      <div class="menu-item" onclick="bukaEkskul()"><div class="menu-icon bg-5"><i class="fas fa-running"></i></div><span>Kegiatan<br>Ekskul</span></div>
+      <div class="menu-item" onclick="bukaSPP()"><div class="menu-icon bg-1"><i class="fas fa-wallet"></i></div><span>Cek<br>Tabungan</span></div>
+      <div class="menu-item" onclick="bukaPerpus()"><div class="menu-icon bg-2"><i class="fas fa-book-reader"></i></div><span>Perpus<br>Digital</span></div>
+      <div class="menu-item" onclick="switchPage('riwayat-page', document.getElementById('nav-riwayat'))"><div class="menu-icon bg-3"><i class="fas fa-history"></i></div><span>Cek<br>Riwayat</span></div>
+    </div>
+  </div>
+
+  <div id="riwayat-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Riwayat Absensi</div></div>
+    <div class="list-container">
+      <div class="page-box">
+        <input type="text" id="search-nis" class="search-input" placeholder="NIS" readonly style="background:#eee;">
+        <button onclick="muatRiwayat()" class="submit-btn" style="margin-top:0;">Tarik Data Riwayat</button>
+      </div>
+    </div>
+    <div id="riwayat-list" class="data-list"><p class="empty-msg">Data riwayat akan muncul di sini.</p></div>
+  </div>
+
+  <div id="info-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Info & Pengumuman</div></div>
+    <div id="info-list" class="list-container"><p class="empty-msg">Memuat data...</p></div>
+  </div>
+
+  <div id="jadwal-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Jadwal Pelajaran</div></div>
+    <div id="jadwal-list" class="list-container"><p class="empty-msg">Memuat jadwal...</p></div>
+  </div>
+
+  <div id="kontak-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Direktori Kontak</div></div>
+    <div id="kontak-list" class="list-container"><p class="empty-msg">Memuat kontak...</p></div>
+  </div>
+
+  <div id="raport-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">E-Raport Siswa</div></div>
+    <div class="list-container">
+      <div class="page-box">
+        <input type="text" id="raport-nis" class="search-input" readonly style="background:#eee;">
+        <button onclick="muatRaport()" class="submit-btn" style="margin-top:0;">Cek Nilai</button>
+      </div>
+    </div>
+    <div id="raport-list" class="data-list"><p class="empty-msg">Nilai akan muncul di sini.</p></div>
+  </div>
+
+  <div id="perpus-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Perpus Digital</div></div>
+    <div class="list-container">
+      <div class="page-box">
+        <input type="text" id="search-buku" onkeyup="cariBuku()" class="search-input" placeholder="Cari judul buku..." style="margin-bottom:0;">
+      </div>
+    </div>
+    <div id="buku-list" class="data-list"><p class="empty-msg">Memuat katalog...</p></div>
+  </div>
+
+  <div id="spp-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Tabungan</div></div>
+    <div class="list-container">
+      <div class="page-box">
+        <input type="text" id="spp-nis" class="search-input" readonly style="background:#eee;">
+        <button onclick="muatSPP()" class="submit-btn" style="margin-top:0;">Cek Tabungan</button>
+      </div>
+    </div>
+    <div id="spp-list" class="data-list"><p class="empty-msg">Data keuangan akan muncul di sini.</p></div>
+  </div>
+
+  <div id="ekskul-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Kegiatan Ekskul</div></div>
+    <div id="ekskul-list" class="list-container"><p class="empty-msg">Memuat daftar...</p></div>
+  </div>
+
+  <div id="bantuan-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Pusat Bantuan</div></div>
+    <div class="list-container">
+      <div class="page-box" style="text-align:center;">
+        <i class="fas fa-headset" style="font-size:3.5rem; color:#0099ff; margin-bottom:15px;"></i>
+        <h3 style="color:#333;">Butuh Bantuan?</h3>
+        <p style="font-size:0.85rem; color:#666; margin-top:10px; margin-bottom:20px;">Silakan hubungi Admin Tata Usaha (TU).</p>
+        <button class="submit-btn" style="background:#25d366; margin-top:0;" onclick="window.open('https://wa.me/6281234567890', '_blank')"><i class="fab fa-whatsapp"></i> Chat Admin TU</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="profil-page" class="page">
+    <div class="header" style="padding-bottom: 40px;"><div class="header-logo">Profil Akun</div></div>
+    <div class="list-container">
+      <div class="page-box" style="text-align:center;">
+        <div style="width:80px; height:80px; background:#e0f2fe; color:#0099ff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:2.5rem; margin:0 auto 15px auto;">
+          <i class="far fa-user"></i>
+        </div>
+        <h3 style="color:#333;" id="profil-nama">Nama User</h3>
+        <p style="font-size:0.85rem; color:#666; font-weight:bold; margin-top:5px;" id="profil-role">Role</p>
+        <button class="submit-btn" style="background:#dc3545; margin-top:20px;" onclick="logout()">Logout / Keluar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav" id="nav-bar">
+    <div class="nav-item active" id="nav-home" onclick="navigasiHome()"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item" id="nav-riwayat" onclick="switchPage('riwayat-page', this)"><i class="fas fa-history"></i><span>Riwayat</span></div>
+    <div class="nav-item center-btn" onclick="openCardModal()"><i class="fas fa-id-badge"></i><span>Kartu</span></div>
+    <div class="nav-item" id="nav-bantuan" onclick="switchPage('bantuan-page', this)"><i class="far fa-comments"></i><span>Bantuan</span></div>
+    <div class="nav-item" id="nav-profil" onclick="switchPage('profil-page', this)"><i class="far fa-user"></i><span>Profil</span></div>
+  </div>
+
+  <div class="modal-overlay" id="notifModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('notifModal')">&times;</span>
+      <h3 style="margin-bottom: 20px; color: #333;"><i class="far fa-bell" style="color:#0099ff;"></i> Notifikasi</h3>
+      <div style="background:#f9f9f9; padding:20px; border-radius:15px; text-align:center; color:#888; font-size:0.9rem; border:1px dashed #ddd;">
+        <i class="fas fa-inbox" style="font-size:2rem; color:#ccc; margin-bottom:10px;"></i><br>Belum ada notifikasi baru.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="absenModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('absenModal')">&times;</span>
+      <h3 style="margin-bottom: 20px; color: #007acc; text-align:center;">Form Kehadiran</h3>
+      <div class="form-group"><label>Nama Lengkap</label><input type="text" id="absen-nama" readonly style="background:#eee;"></div>
+      <div class="form-group"><label>NIS</label><input type="text" id="absen-nis" readonly style="background:#eee;"></div>
+      <div class="form-group"><label>Keterangan</label><select id="absen-ket"><option value="Hadir">Hadir</option><option value="Izin">Izin</option><option value="Sakit">Sakit</option></select></div>
+      <button class="submit-btn" id="btn-kirim-absen" onclick="kirimAbsen()">Kirim Absensi</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cardModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('cardModal')">&times;</span>
+      <div id="card-display-view">
+        <h3 style="margin-bottom: 15px; color: #007acc; text-align:center;">Kartu Pelajar Digital</h3>
+        <input type="hidden" id="card-nis">
+        <div class="id-card">
+          <div class="card-header">KARTU PELAJAR<br>SMP12 BEST AGRO</div>
+          <div class="student-name" id="view-nama">-</div>
+          <div class="student-info" id="view-nis-kelas">NIS: - | KELAS: -</div>
+          <div class="qr-container"><img id="view-qr" src="" alt="QR Code"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var dataBukuLokal = [];
+  var currentUser = null; 
+
+  // --- MESIN SUARA & TOAST (BARU DITAMBAHKAN) ---
+  var audioSuccess = new Audio('https://www.soundjay.com/buttons/sounds/button-09.mp3'); 
+  var audioError = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+
+  function showToast(pesan, tipe = 'success') {
+    var container = document.getElementById('toast-container');
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + tipe;
+    var icon = tipe === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+    toast.innerHTML = icon + ' <span>' + pesan + '</span>';
+    container.appendChild(toast);
+    
+    if(tipe === 'success') audioSuccess.play().catch(e=>console.log("Audio ditahan")); 
+    else audioError.play().catch(e=>console.log("Audio ditahan"));
+
+    setTimeout(function() {
+      toast.classList.add('fade-out');
+      setTimeout(function() { toast.remove(); }, 300);
+    }, 3000);
+  }
+
+  // --- PERBAIKAN FUNGSI NAVIGASI ---
+  function switchPage(pageId, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    
+    if(el && !el.classList.contains('center-btn')) {
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+      el.classList.add('active');
+    }
+    window.scrollTo(0, 0); 
+  }
+
+  function navigasiHome() {
+    if(!currentUser) return;
+    if(currentUser.role === 'admin' || currentUser.role === 'guru') {
+      switchPage('admin-page', document.getElementById('nav-home'));
+    } else {
+      switchPage('home-page', document.getElementById('nav-home'));
+    }
+  }
+
+  function prosesLogin() {
+    var u = document.getElementById('login-user').value;
+    var p = document.getElementById('login-pass').value;
+    var btn = document.getElementById('btn-login');
+    if(!u || !p) return showToast("Harap isi Username dan Password!", "error"); // <--- Diganti ke showToast
+    
+    btn.innerHTML = "Memeriksa Data..."; btn.disabled = true;
+    
+    google.script.run.withSuccessHandler(function(res) {
+      btn.innerHTML = "Masuk ke Aplikasi"; btn.disabled = false;
+      if(res.status == 'error') return showToast(res.pesan, "error"); // <--- Diganti ke showToast
+      
+      // Jika berhasil login
+      currentUser = res;
+      document.getElementById('nav-bar').style.display = 'flex'; 
+      document.getElementById('profil-nama').innerText = res.nama;
+      document.getElementById('profil-role').innerText = res.role.toUpperCase();
+      
+      showToast("Selamat Datang, " + res.nama, "success"); // <--- Notifikasi Sukses
+      
+      if(res.role === 'admin' || res.role === 'guru') {
+        document.getElementById('nama-admin').innerText = res.nama;
+        switchPage('admin-page', document.getElementById('nav-home'));
+      } else {
+        document.getElementById('nama-siswa').innerText = res.nama;
+        document.getElementById('search-nis').value = res.username;
+        document.getElementById('raport-nis').value = res.username;
+        document.getElementById('spp-nis').value = res.username;
+        document.getElementById('absen-nis').value = res.username;
+        document.getElementById('absen-nama').value = res.nama;
+        document.getElementById('card-nis').value = res.username;
+        switchPage('home-page', document.getElementById('nav-home'));
+      }
+    }).cekLogin(u, p);
+  }
+
+  function logout() {
+    currentUser = null;
+    document.getElementById('nav-bar').style.display = 'none'; 
+    document.getElementById('login-user').value = "";
+    document.getElementById('login-pass').value = "";
+    switchPage('login-page', null);
+  }
+  // ------------------------------------
+
+  // Modals
+  function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+  function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+  
+  function openCardModal() { 
+    if(currentUser.role === 'admin' || currentUser.role === 'guru') {
+      return showToast("Fitur Kartu Pelajar khusus untuk Siswa.", "error"); // <--- Diganti ke showToast
+    }
+    openModal('cardModal'); 
+    var nis = document.getElementById('card-nis').value;
+    google.script.run.withSuccessHandler(function(siswa) { 
+      if(!siswa) return;
+      document.getElementById('view-nama').innerHTML = siswa.nama; 
+      document.getElementById('view-nis-kelas').innerHTML = "NIS: " + siswa.nis + " | KELAS: " + siswa.kelas; 
+      document.getElementById('view-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + siswa.nis; 
+    }).getStudentDetail(nis);
+  }
+
+  // --- FUNGSI FETCH DATA GOOGLE SHEETS ---
+  function kirimAbsen() { 
+    var btn = document.getElementById('btn-kirim-absen'); 
+    var data = { nama: document.getElementById('absen-nama').value, nis: document.getElementById('absen-nis').value, keterangan: document.getElementById('absen-ket').value }; 
+    if(!data.nama || !data.nis) return showToast("NIS tidak terdeteksi!", "error"); // <--- Diganti ke showToast
+    btn.innerHTML = "Memproses..."; btn.disabled = true; 
+    google.script.run.withSuccessHandler(function(res) { 
+      showToast(res, "success"); // <--- Diganti ke showToast
+      btn.innerHTML = "Kirim Absensi"; btn.disabled = false; closeModal('absenModal'); 
+    }).simpanAbsen(data); 
+  }
+  function muatRiwayat() { 
+    var nis = document.getElementById('search-nis').value; 
+    var list = document.getElementById('riwayat-list'); 
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Mencari data...</p>"; 
+    google.script.run.withSuccessHandler(function(data) { 
+      if(data.length == 0) { list.innerHTML = "<p class='empty-msg'>Belum ada data absensi.</p>"; return; } 
+      list.innerHTML = ""; 
+      data.forEach(function(item) { 
+        var color = item.keterangan == 'Hadir' ? '#2e7d32' : (item.keterangan == 'Izin' ? '#e65100' : '#c2185b');
+        var bg = item.keterangan == 'Hadir' ? '#e8f5e9' : (item.keterangan == 'Izin' ? '#fff3e0' : '#fce4ec');
+        list.innerHTML += `<div class="card-item"><div><h4 style="font-size:0.95rem; color:#333;">${item.tanggal}</h4><p style="font-size:0.75rem; color:#888;">Pukul ${item.jam} WIB</p></div><span style="background:${bg}; color:${color}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:700;">${item.keterangan}</span></div>`; 
+      }); 
+    }).getRiwayat(nis); 
+  }
+  function bukaInfo() {
+    switchPage('info-page', null); var list = document.getElementById('info-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Memuat pengumuman...</p>";
+    google.script.run.withSuccessHandler(function(data) {
+      if(data.length == 0) { list.innerHTML = "<p class='empty-msg'>Belum ada pengumuman.</p>"; return; }
+      list.innerHTML = ""; data.forEach(function(item) { list.innerHTML += `<div style="background:white; padding:20px; border-radius:20px; margin-bottom:15px; box-shadow:0 2px 10px rgba(0,0,0,0.03); border:1px solid #eee;"><span style="font-size:0.75rem; color:#0099ff; font-weight:600;"><i class="far fa-calendar-alt"></i> ${item.tanggal}</span><h3 style="font-size:1.1rem; color:#333; margin:8px 0;">${item.judul}</h3><p style="font-size:0.85rem; color:#666; line-height:1.5;">${item.isi}</p></div>`; });
+    }).getPengumuman();
+  }
+  function bukaJadwal() {
+    switchPage('jadwal-page', null); var list = document.getElementById('jadwal-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Memuat jadwal...</p>";
+    google.script.run.withSuccessHandler(function(res) {
+      list.innerHTML = `<div style="background:white; padding:15px; border-radius:15px; text-align:center; margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.05);"><h3 style="color:#0099ff; font-size:1.1rem;">Hari ${res.hari}</h3></div>`;
+      if(res.jadwal.length == 0) { list.innerHTML += "<p class='empty-msg'>Tidak ada jadwal.</p>"; return; }
+      res.jadwal.forEach(function(item) { list.innerHTML += `<div class="card-item"><span style="color:#0099ff; font-weight:700; font-size:0.9rem;">${item.jam}</span><span style="font-weight:600; color:#333;">${item.mapel}</span></div>`; });
+    }).getJadwal();
+  }
+  function bukaKontak() {
+    switchPage('kontak-page', null); var list = document.getElementById('kontak-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Memuat kontak...</p>";
+    google.script.run.withSuccessHandler(function(data) {
+      if(data.length == 0) { list.innerHTML = "<p class='empty-msg'>Belum ada data kontak.</p>"; return; }
+      list.innerHTML = ""; data.forEach(function(item) { list.innerHTML += `<div class="card-item"><div><h4 style="font-size:0.95rem; color:#333;">${item.nama}</h4><p style="font-size:0.75rem; color:#777;">${item.jabatan}</p></div><a href="https://wa.me/${item.wa}" target="_blank" style="background:#25d366; color:white; padding:8px 14px; border-radius:10px; text-decoration:none; font-size:0.8rem; font-weight:600;"><i class="fab fa-whatsapp"></i> Chat</a></div>`; });
+    }).getKontak();
+  }
+  function bukaRaport() { switchPage('raport-page', null); }
+  function muatRaport() {
+    var nis = document.getElementById('raport-nis').value; var list = document.getElementById('raport-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Mencari nilai...</p>";
+    google.script.run.withSuccessHandler(function(data) {
+      if(data.length == 0) { list.innerHTML = "<p class='empty-msg' style='color:#dc3545;'>Nilai tidak ditemukan.</p>"; return; }
+      list.innerHTML = `<h3 style="margin-bottom:15px; color:#333; font-size:1rem;">Daftar Nilai Akhir</h3>`;
+      data.forEach(item => { var warnaBadge = item.nilai >= 75 ? '#28a745' : '#dc3545'; list.innerHTML += `<div class="card-item"><span style="font-weight:600; color:#444; font-size:0.9rem;">${item.mapel}</span><span style="background:${warnaBadge}; color:white; padding:6px 15px; border-radius:12px; font-weight:bold; font-size:0.9rem;">${item.nilai}</span></div>`; });
+    }).getRaport(nis);
+  }
+  function bukaPerpus() {
+    switchPage('perpus-page', null); var list = document.getElementById('buku-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Mengunduh katalog...</p>";
+    google.script.run.withSuccessHandler(function(data) { dataBukuLokal = data; tampilkanBuku(dataBukuLokal); }).getDaftarBuku();
+  }
+  function tampilkanBuku(bukuArray) {
+    var list = document.getElementById('buku-list'); if(bukuArray.length == 0) { list.innerHTML = "<p class='empty-msg'>Buku tidak ditemukan.</p>"; return; }
+    list.innerHTML = ""; bukuArray.forEach(item => { var isTersedia = item.status.toLowerCase() === 'tersedia'; var bgStatus = isTersedia ? '#e8f5e9' : '#fce4ec'; var textStatus = isTersedia ? '#2e7d32' : '#c2185b'; list.innerHTML += `<div class="card-item"><div><h4 style="font-size:0.95rem; color:#333;">${item.judul}</h4><p style="font-size:0.75rem; color:#888;">ID: ${item.kode} • ${item.kategori}</p></div><span style="background:${bgStatus}; color:${textStatus}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:700;">${item.status}</span></div>`; });
+  }
+  function cariBuku() { var keyword = document.getElementById('search-buku').value.toLowerCase(); tampilkanBuku(dataBukuLokal.filter(buku => buku.judul.toLowerCase().includes(keyword) || buku.kategori.toLowerCase().includes(keyword))); }
+  function bukaSPP() { switchPage('spp-page', null); }
+  function muatSPP() {
+    var nis = document.getElementById('spp-nis').value; var list = document.getElementById('spp-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Mengecek tabungan...</p>";
+    google.script.run.withSuccessHandler(function(data) {
+      if(data.length == 0) { list.innerHTML = "<p class='empty-msg' style='color:#dc3545;'>Tabungan tidak ditemukan.</p>"; return; }
+      list.innerHTML = `<h3 style="margin-bottom:15px; color:#333; font-size:1rem;">Rincian Tabungan</h3>`;
+      data.forEach(item => { var isLunas = item.status.toLowerCase() === 'lunas'; var bgStatus = isLunas ? '#e8f5e9' : '#fce4ec'; var textStatus = isLunas ? '#28a745' : '#dc3545'; var icon = isLunas ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>'; list.innerHTML += `<div class="card-item"><div><h4 style="font-size:0.95rem; color:#333;">${item.jenis}</h4><p style="font-size:0.85rem; color:#666; font-weight:600;">${item.nominal}</p></div><span style="background:${bgStatus}; color:${textStatus}; padding:8px 12px; border-radius:12px; font-size:0.75rem; font-weight:700;">${icon} ${item.status}</span></div>`; });
+    }).getSPP(nis);
+  }
+  
+  // --- FUNGSI EKSKUL YANG SEBELUMNYA TERPOTONG SUDAH DISAMBUNG ---
+  function bukaEkskul() {
+    switchPage('ekskul-page', null); var list = document.getElementById('ekskul-list');
+    list.innerHTML = "<p class='empty-msg'><i class='fas fa-spinner fa-spin'></i> Memuat ekskul...</p>";
+    google.script.run.withSuccessHandler(function(data) {
+      if(data.length == 0) { list.innerHTML = "<p class='empty-msg'>Belum ada data ekskul.</p>"; return; }
+      list.innerHTML = ""; data.forEach(function(item) { list.innerHTML += `<div class="card-item" style="justify-content:flex-start; gap:15px;"><div style="width:50px; height:50px; background:#ede7f6; color:#4527a0; border-radius:15px; display:flex; justify-content:center; align-items:center; font-size:1.5rem;"><i class="fas fa-running"></i></div><div><h4 style="font-size:1rem; color:#333; margin-bottom:3px;">${item.nama}</h4><p style="font-size:0.75rem; color:#666;"><i class="far fa-clock" style="width:15px"></i> ${item.jadwal}</p><p style="font-size:0.75rem; color:#666;"><i class="fas fa-map-marker-alt" style="width:15px"></i> ${item.lokasi}</p></div></div>`; }); 
+    }).getEkskul(); 
+  }
+</script>
+</body>
+</html>
